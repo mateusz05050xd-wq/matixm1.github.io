@@ -12,9 +12,8 @@
 body {
   font-family: 'Poppins', sans-serif;
   color: #fff;
-  background: radial-gradient(circle at top, var(--bg1), var(--bg2) 70%);
-  overflow-x: hidden;
-  transition: 0.5s;
+  background: radial-gradient(circle at top, var(--bg1), var(--bg2));
+  transition: 0.4s;
 }
 
 /* MOTYWY */
@@ -25,63 +24,74 @@ body {
   --second:#6a5cff;
 }
 
-.theme-blue {
-  --main:#00c6ff;
-  --second:#0072ff;
-}
+.theme-blue { --main:#00c6ff; --second:#0072ff; }
+.theme-green { --main:#00ff88; --second:#00c853; }
+.theme-red { --main:#ff3b3b; --second:#ff0000; }
 
-.theme-green {
-  --main:#00ff88;
-  --second:#00c853;
-}
-
-/* TOP MENU */
+/* TOPBAR */
 .topbar {
   position: fixed;
   width: 100%;
-  top: 0;
   display: flex;
   justify-content: space-between;
   padding: 15px 25px;
   z-index: 999;
 }
 
+/* DROPDOWN */
 .dropdown {
   position: relative;
 }
 
 .dropbtn {
-  background: rgba(255,255,255,0.1);
-  border: none;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
   color: white;
-  padding: 10px 15px;
-  border-radius: 10px;
+  padding: 10px 16px;
+  border-radius: 12px;
   cursor: pointer;
+  transition: 0.3s;
+}
+
+.dropbtn:hover {
+  background: rgba(255,255,255,0.15);
 }
 
 .dropdown-content {
-  display: none;
   position: absolute;
-  background: rgba(0,0,0,0.8);
-  border-radius: 10px;
-  margin-top: 5px;
+  top: 45px;
+  background: rgba(0,0,0,0.9);
+  border-radius: 14px;
+  overflow: hidden;
+  min-width: 160px;
+  display: none;
+  animation: fadeIn 0.2s ease;
 }
 
 .dropdown-content button {
-  display: block;
   width: 100%;
+  padding: 12px;
   background: none;
   border: none;
   color: white;
-  padding: 10px;
+  text-align: left;
   cursor: pointer;
+  transition: 0.2s;
 }
 
-.dropdown:hover .dropdown-content {
-  display: block;
+.dropdown-content button:hover {
+  background: rgba(255,255,255,0.1);
 }
 
-/* RESZTA */
+.show { display: block; }
+
+@keyframes fadeIn {
+  from {opacity:0; transform:translateY(-10px);}
+  to {opacity:1; transform:translateY(0);}
+}
+
+/* CONTENT */
 .container {
   max-width: 1100px;
   margin: auto;
@@ -104,11 +114,10 @@ h1 {
   justify-content: center;
   gap: 25px;
   flex-wrap: wrap;
-  margin-bottom: 60px;
 }
 
 .btn {
-  padding: 18px 34px;
+  padding: 16px 30px;
   border-radius: 14px;
   text-decoration: none;
   font-weight: 600;
@@ -117,13 +126,14 @@ h1 {
   transition: 0.3s;
 }
 
-.btn:hover { transform: scale(1.1); }
+.btn:hover { transform: scale(1.08); }
 
 .card {
-  margin-top: 60px;
-  padding: 35px;
+  margin-top: 50px;
+  padding: 30px;
   border-radius: 20px;
   background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(12px);
 }
 
 .youtube iframe {
@@ -131,6 +141,7 @@ h1 {
   max-width: 800px;
   height: 450px;
   border-radius: 16px;
+  margin-top: 30px;
 }
 
 footer {
@@ -142,13 +153,12 @@ footer {
 
 <body>
 
-<!-- GÓRNY PANEL -->
 <div class="topbar">
 
   <!-- JĘZYK -->
   <div class="dropdown">
-    <button class="dropbtn">🌐 Język</button>
-    <div class="dropdown-content">
+    <button class="dropbtn" onclick="toggleMenu('langMenu')">🌐 Język</button>
+    <div class="dropdown-content" id="langMenu">
       <button onclick="setLang('pl')">🇵🇱 Polski</button>
       <button onclick="setLang('en')">🇬🇧 English</button>
     </div>
@@ -156,11 +166,12 @@ footer {
 
   <!-- KOLOR -->
   <div class="dropdown">
-    <button class="dropbtn">🎨 Kolor</button>
-    <div class="dropdown-content">
+    <button class="dropbtn" onclick="toggleMenu('themeMenu')">🎨 Kolor</button>
+    <div class="dropdown-content" id="themeMenu">
       <button onclick="setTheme('')">💜 Domyślny</button>
       <button onclick="setTheme('theme-blue')">💙 Niebieski</button>
       <button onclick="setTheme('theme-green')">💚 Zielony</button>
+      <button onclick="setTheme('theme-red')">❤️ Czerwony</button>
     </div>
   </div>
 
@@ -172,8 +183,8 @@ footer {
 <p class="tagline" id="tagline">YouTube • Discord • Gaming • Społeczność</p>
 
 <div class="buttons">
-  <a class="btn" id="discordBtn" href="https://discord.gg/e2ynfWRC" target="_blank">💬 Dołącz do Discorda</a>
-  <a class="btn" id="ytBtn" href="https://www.youtube.com/@MatiXM-123" target="_blank">📺 Kanał YouTube</a>
+  <a class="btn" id="discordBtn" href="#">💬 Dołącz do Discorda</a>
+  <a class="btn" id="ytBtn" href="#">📺 Kanał YouTube</a>
 </div>
 
 <div class="card">
@@ -198,46 +209,56 @@ footer {
 
 <script>
 
+/* DROPDOWN */
+function toggleMenu(id) {
+  document.querySelectorAll(".dropdown-content").forEach(el => {
+    if (el.id !== id) el.classList.remove("show");
+  });
+  document.getElementById(id).classList.toggle("show");
+}
+
+document.addEventListener("click", function(e) {
+  if (!e.target.closest(".dropdown")) {
+    document.querySelectorAll(".dropdown-content").forEach(el => {
+      el.classList.remove("show");
+    });
+  }
+});
+
 /* JĘZYKI */
-const translations = {
+const t = {
   pl: {
-    title: "🔥 Społeczność MatiXM 🔥",
-    tagline: "YouTube • Discord • Gaming • Społeczność",
-    discord: "💬 Dołącz do Discorda",
-    yt: "📺 Kanał YouTube",
-    latest: "Najnowszy film",
-    desc: "Zobacz mój kanał i dołącz do społeczności!",
-    coop: "Współprace 🤝",
-    coopDesc: "Chcesz współpracę? Twój serwer pojawi się na Discordzie.",
-    footer: "© 2026 MatiXM • Strona społeczności"
+    title:"🔥 Społeczność MatiXM 🔥",
+    tagline:"YouTube • Discord • Gaming • Społeczność",
+    discord:"💬 Dołącz do Discorda",
+    yt:"📺 Kanał YouTube",
+    latest:"Najnowszy film",
+    desc:"Zobacz mój kanał i dołącz do społeczności!",
+    coop:"Współprace 🤝",
+    coopDesc:"Chcesz współpracę? Twój serwer pojawi się na Discordzie.",
+    footer:"© 2026 MatiXM • Strona społeczności"
   },
   en: {
-    title: "🔥 MatiXM Community 🔥",
-    tagline: "YouTube • Discord • Gaming • Community",
-    discord: "💬 Join Discord",
-    yt: "📺 YouTube Channel",
-    latest: "Latest video",
-    desc: "Check out my channel and join the community!",
-    coop: "Partnerships 🤝",
-    coopDesc: "Want to collaborate? Your server will appear on our Discord.",
-    footer: "© 2026 MatiXM • Community website"
+    title:"🔥 MatiXM Community 🔥",
+    tagline:"YouTube • Discord • Gaming • Community",
+    discord:"💬 Join Discord",
+    yt:"📺 YouTube Channel",
+    latest:"Latest video",
+    desc:"Check out my channel and join the community!",
+    coop:"Partnerships 🤝",
+    coopDesc:"Want to collaborate? Your server will appear on our Discord.",
+    footer:"© 2026 MatiXM • Community website"
   }
 };
 
-function setLang(lang) {
-  document.getElementById("title").innerText = translations[lang].title;
-  document.getElementById("tagline").innerText = translations[lang].tagline;
-  document.getElementById("discordBtn").innerText = translations[lang].discord;
-  document.getElementById("ytBtn").innerText = translations[lang].yt;
-  document.getElementById("latest").innerText = translations[lang].latest;
-  document.getElementById("desc").innerText = translations[lang].desc;
-  document.getElementById("coop").innerText = translations[lang].coop;
-  document.getElementById("coopDesc").innerText = translations[lang].coopDesc;
-  document.getElementById("footer").innerText = translations[lang].footer;
+function setLang(l){
+  for(let key in t[l]){
+    document.getElementById(key).innerText = t[l][key];
+  }
 }
 
 /* MOTYW */
-function setTheme(theme) {
+function setTheme(theme){
   document.body.className = theme;
 }
 
